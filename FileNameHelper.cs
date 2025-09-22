@@ -29,5 +29,10 @@
                 return _year + "StatePresLayer.json";
         }
 
+        public string GetFireFileName()
+        {
+            return (_year == "2025" ? "2024" : _year) + "NationalUSFSFireOccurrencePoint.json";
+        }
+
     }
 }

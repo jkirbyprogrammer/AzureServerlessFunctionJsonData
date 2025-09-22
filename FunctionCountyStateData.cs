@@ -25,33 +25,18 @@ public class FunctionCountyStateData
     {
 
         _logger.LogInformation("C# HTTP trigger function processed a request.");
-        string type = "ussec";
-        string year = "2025";
-        string fileName = "";
-        if (req.Query != null
-            && !String.IsNullOrEmpty(req.Query["type"].ToString())
-            && !String.IsNullOrEmpty(req.Query["year"].ToString()))
-        {
-            type = req.Query["type"].ToString();
-            year = req.Query["year"].ToString();
-        }
-
-        if (type == "ussec")
-            fileName = year + "CountyUsSecLayer.json";
-        else
-            fileName = year + "CountyPresLayer.json";
+        string type = req.Query["type"].ToString();
+        string year = req.Query["year"].ToString();
+        FileNameHelper fileNameHelper = new(type, year);
+        string fileName = fileNameHelper.GetCountyFileName();
 
         string connectionString = _configuration.GetConnectionString("BlobConnectionString") ?? ""; //connection string from local.settings.json for Azure Blob storage
         string containerName = "mapjsonfiles"; //Container name
-        string jsonFileName = fileName; //"2025StateUsSecLayer.json"; // File name
-
+        string jsonFileName = fileName; // File name
         BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
         BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        string jsonContent = string.Empty;
-
         BlobClient blobClient = containerClient.GetBlobClient(jsonFileName);
         BlobDownloadResult downloadResult = await blobClient.DownloadContentAsync();
-
         string jsonString = Encoding.UTF8.GetString(downloadResult.Content.ToArray());
 
         return new OkObjectResult(jsonString);
@@ -62,34 +47,16 @@ public class FunctionCountyStateData
     {
 
         _logger.LogInformation("C# HTTP trigger function processed a request.");
-        string type = "ussec";
-        string year = "2025";
-        string fileName = "";
-        if (req.Query != null
-            && !String.IsNullOrEmpty(req.Query["type"].ToString())
-            && !String.IsNullOrEmpty(req.Query["year"].ToString()))
-        {
-            type = req.Query["type"].ToString();
-            year = req.Query["year"].ToString();
-        }
-
-        if (type == "ussec")
-        {
-            fileName = year + "StateUsSecLayer.json";
-        }
-        else
-        {
-            fileName = year + "StatePresLayer.json";
-        }
+        string type = req.Query["type"].ToString();
+        string year = req.Query["year"].ToString();
+        FileNameHelper fileNameHelper = new(type, year);
+        string fileName = fileNameHelper.GetStateFileName();
 
         string connectionString = _configuration.GetConnectionString("BlobConnectionString") ?? ""; //connection string from local.settings.json for Azure Blob storage
         string containerName = "mapjsonfiles"; //Container name
         string jsonFileName = fileName; //"2025StateUsSecLayer.json"; // File name
-
         BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
         BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        string jsonContent = string.Empty;
-
         BlobClient blobClient = containerClient.GetBlobClient(jsonFileName);
         BlobDownloadResult downloadResult = await blobClient.DownloadContentAsync();
 
